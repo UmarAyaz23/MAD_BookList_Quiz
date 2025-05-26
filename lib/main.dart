@@ -1,0 +1,203 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const Start());
+}
+
+class Start extends StatelessWidget {
+  const Start({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'MAD BookList Quiz',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
+      ),
+      home: const AuthenticationPage(),
+    );
+  }
+}
+
+class AuthenticationPage extends StatefulWidget {
+  const AuthenticationPage({super.key});
+
+  @override
+  State<AuthenticationPage> createState() => _AuthenticationPageState();
+}
+
+class _AuthenticationPageState extends State<AuthenticationPage> {
+  List<Map<String, dynamic>> credentials = [
+    {'rollNumber': '22FA008CS', 'password': 'umar'},
+    {'rollNumber': '22FA018CS', 'password': 'saaniya'},
+    {'rollNumber': '22FA019CS', 'password': 'anuf'},
+    {'rollNumber': '22FA026CS', 'password': 'zeeshan'},
+  ];
+
+  final TextEditingController _rollNum = TextEditingController();
+  final TextEditingController _pass = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _rollNum,
+                decoration: const InputDecoration(
+                  label: Text("Roll Number", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  border: OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blueGrey, width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blueGrey, width: 1),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              TextField(
+                controller: _pass,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  label: Text("Password", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  border: OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blueGrey, width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blueGrey, width: 1),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  bool correct = credentials.any((cred) =>
+                      _rollNum.text == cred['rollNumber'] && _pass.text == cred['password']);
+
+                  if (correct) {
+                    Navigator.pushReplacement(
+                        context, MaterialPageRoute(builder: (context) => HomePage()));
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                  backgroundColor: Colors.blueGrey,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text("Sign In", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  HomePage({super.key});
+
+  final List<String> drawerOptions = ["Find a Book", "Issue a Book", "Publish a Book"];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("MAD BookList Quiz", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: Colors.blueGrey,
+        centerTitle: true,
+      ),
+      drawer: Drawer(
+        child: Container(
+          color: Colors.blueGrey,
+          child: Column(
+            children: [
+              const SizedBox(height: 30),
+              const CircleAvatar(
+                backgroundImage: AssetImage("assets/example.jpg"),
+                radius: 50,
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: drawerOptions.length,
+                  itemBuilder: (context, int index) {
+                    return ListTile(
+                      title: Text(drawerOptions[index], style: const TextStyle(color: Colors.white)),
+                      onTap: () {
+                        Navigator.pop(context); 
+                        if (drawerOptions[index] == "Issue a Book") {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => IssueBookPage()));
+                        } else {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(content: Text("Feature Unimplemented")));
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class IssueBookPage extends StatelessWidget {
+  IssueBookPage({super.key});
+
+  final List<String> bookList = ["Book 01", "Book 02", "Book 03", "Book 04", "Book 05", "Book 06", "Book 07", "Book 08"];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("MAD BookList Quiz", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: Colors.blueGrey,
+        centerTitle: true,
+      ),
+      body: ListView.builder(
+        itemCount: bookList.length,
+        itemBuilder: (context, int index) {
+          return ListTile(
+            title: Text(bookList[index]),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text("Book Options"),
+                    content: const Text("Would you like to add to cart?"),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("Add to Cart"),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("Cancel"),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
